@@ -8,12 +8,22 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
 {
     public class CustomVector
     {
-        public List<int> Inputs { get; set; }
+        public CustomVector(List<int> inputs, int isUnipolarOrBipolarOrNone)
+        {
+            Inputs=inputs;
+            IsUnipolarOrBipolarOrNone=isUnipolarOrBipolarOrNone;
+        }
 
-        /* inputs contain -1 -> bipolar (-1)
-         * inputs contain 0 -> unipolar (0)
-         * inputs contain neither 0 nor 1 -> none (1)
-         */
-        public int IsUnipolarOrBipolarOrNone { get; set; } 
+        List<int> Inputs { get;set;}
+
+        /* inputs contain -1,1 -> bipolar (-1)
+          * inputs contain 0,1 -> unipolar (0)
+          * inputs contain only 1s -> none (1)
+          */
+        public int IsUnipolarOrBipolarOrNone { get; set; }
+        public string FormatInputsAsAString()
+        {
+            return(string.Join(" ", Inputs.Select(x => (x>=0 ? " ":"")+x.ToString()).ToArray()));
+        }
     }
 }

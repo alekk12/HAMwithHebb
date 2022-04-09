@@ -8,20 +8,35 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
 {
     public class HopfieldNeuralNetwork
     {
-        List<CustomVector> vectors { get; set; }
-        public HopfieldNeuralNetwork(List<CustomVector> vectors)
+        public List<CustomVector> Vectors { get; set; }
+        //CustomVector testVector { get; set; }
+
+         /* inputs contain -1,1 -> bipolar (-1)
+         * inputs contain 0,1 -> unipolar (0)
+         * inputs contain only 1s -> none (1)
+         */
+        public int IsUnipolarOrBipolarOrNone { get; set; }
+        public HopfieldNeuralNetwork(List<CustomVector> vectors, int IsUnipolarOrBipolarOrNone)
         {
-            this.vectors = vectors;
+            this.Vectors = vectors;
+            this.IsUnipolarOrBipolarOrNone = IsUnipolarOrBipolarOrNone;
         }
 
         public void Train()
         {
 
         }
-        public CustomVector Predict(List<CustomVector> testVector)
+        public void CalculateWeightMatrix()
         {
-            CustomVector customVector = new CustomVector();
-            return (customVector);
+
+        }
+        /*returns the predictions as a list of strings, in case we have a cycle of size and more than one output vector*/
+        public List<string> Predict(CustomVector testVector)
+        {
+            //List<string> strings = new List<string>();
+            //temporary to see if this works
+            List<string> strings = new List<string> { "There is a cycle of size 2.", "0 0", "1 1" };
+            return (strings);
         }
     }
 }

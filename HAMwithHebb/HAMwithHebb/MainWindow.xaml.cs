@@ -1,6 +1,8 @@
 ﻿using HAMwithHebb.HopfieldNeuralNetwork;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,84 +23,120 @@ namespace HAMwithHebb
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<int> vectors;
+        public CustomVector currentVector;
+        public List<CustomVector> vectors;
         public HopfieldNeuralNetwork.HopfieldNeuralNetwork hopfieldNeuralNetwork;
         public bool isInputValid = false;
-        public
+        public bool isPredictVectorValid = false;
+        public int IsUniBiOrNone = 1; //assume that initial ham is neither unipolar nor bipolar
+        public bool canPredict = false;
         public MainWindow()
         {
             InitializeComponent();
-            vectors = new List<int>();
-            /*List<String> ListOfStrings = new List<String> { "0 1","1 -3"};
-            //MyData myDataObject = new MyData(DateTime.Now);
-            Binding myBinding = new Binding("ListOfInput");
-            myBinding.Source = ListOfStrings;
-            BindingOperations.SetBinding(inputListbox, TextBlock.TextProperty, myBinding);
-            foreach (string item in ListOfStrings)
+            vectors = new List<CustomVector>();
+        }
+        private void UpdateInputList()
+        {
+            AddToInputList(currentVector.FormatInputsAsAString());
+            if (currentVector.IsUnipolarOrBipolarOrNone!=1 && IsUniBiOrNone != currentVector.IsUnipolarOrBipolarOrNone)
             {
-                ListViewItem itm = new ListViewItem();
-                itm.Content = item;
-                itm.IsHitTestVisible = false;
-                inputListbox.Items.Add(itm);
-            }*/
+                IsUniBiOrNone = currentVector.IsUnipolarOrBipolarOrNone;
+                Train.Content = Train.Content+" "+(IsUniBiOrNone==0 ? "Unipolar" : "Bipolar");
+            }
+            InputButton.IsEnabled = false;
+            currentVector = null;
+            InputVector.Text = null;
+            Train.IsEnabled = true;
+        }
+        private void UpdateOutputList()
+        {
+            outputListbox.Items.Clear();
+            List<string> items = hopfieldNeuralNetwork.Predict(currentVector);
+            foreach (string item in items)
+            {
+                AddToOutputList(item);
+            }
+            //PredictButton.IsEnabled = false;
         }
 
         private void InputVector_KeyDown(object sender, KeyEventArgs e)
         {
-            if (isInputValid)
-            {
-                InputButton.IsEnabled = true;
-                if (e.Key == Key.Enter)
-                {
-
-                    //textBlock1.Text = "You Entered: " + textBox1.Text;
-                    addToInputList(InputVector.Text);
-                }
-            }
+            if (isInputValid && e.Key == Key.Enter){UpdateInputList();}
         }
 
-        private bool validateInputVector(string text)
+        private bool ValidateVector(string text, Label InputError)
         {
             if(text.Length < 1) { return false; }
             string[] split = { " " };
             string[] temp = text.Split(split, StringSplitOptions.RemoveEmptyEntries);
+            int[] opts = { -1, 0, 1 };
             List<int> list = new List<int>();
+            int netUniBiNone = IsUniBiOrNone;
+            int vecUniBiNone = 1;
             foreach (string s in temp)
             {
-                int numericValue;
-                if(int.TryParse(s, out numericValue))
+                //Train.Content = netUniBiNone+"|"+vecUniBiNone+"|"+s;
+                if (int.TryParse(s, out int numericValue))
                 {
+                    if (!opts.Contains(numericValue))
+                    {
+                        InputError.Content = "Wrong Input! The "+(netUniBiNone==0 ? "Uni" : "Bi")+"polar network allows only "+netUniBiNone+",1 as input";
+                        return (false);
+                    }
+                    if (netUniBiNone!=vecUniBiNone && netUniBiNone == numericValue)
+                    {
+                        vecUniBiNone = numericValue;
+                    }
+                    else if (numericValue!=netUniBiNone && numericValue != vecUniBiNone)
+                    {
+                        if (netUniBiNone==1)
+                        {
+                            netUniBiNone = numericValue;
+                            vecUniBiNone = numericValue;
+                        }
+                        else if (numericValue!=1)
+                        {
+                            InputError.Content = "Wrong Input! The "+(netUniBiNone==0 ? "Uni" : "Bi")+"polar network allows only "+netUniBiNone+",1 as input";
+                            return (false);
+                        }
+                    }
+                    list.Add(numericValue);
 
                 }
-                else
+                else if (s!="-" || netUniBiNone == 0)
                 {
-                    InputError.Content = "Wrong Input! The only allowed characters are -1,0,1";
-                    return(false);
+                    InputError.Content = "Wrong Input! The "+(netUniBiNone==1 ? "network allows only -1,0,1 as input" : ((netUniBiNone==0 ? "Unipolar " : "Bipolar ")+"network allows only "+netUniBiNone+",1 as input"));
+                    return (false);
                 }
             }
-            //vectors.Add()
+            currentVector = new CustomVector(list, vecUniBiNone);
             InputError.Content = "";
             return (true);
         }
 
-        private void TestVector_KeyDown(object sender, KeyEventArgs e)
+        private void PredictVector_KeyDown(object sender, KeyEventArgs e)
         {
+            if (isPredictVectorValid && e.Key == Key.Enter) { UpdateOutputList(); }
             //add to the classification
         }
 
-        private void addToInputList(string item)
+        private void AddToInputList(string item)
         {
-            ListViewItem itm = new ListViewItem();
-            itm.Content = item;
-            itm.IsHitTestVisible = false;
+            ListViewItem itm = new ListViewItem
+            {
+                Content = item,
+                IsHitTestVisible = false
+            };
             inputListbox.Items.Add(itm);
         }
 
-        private void addToOutputList(string item)
+        private void AddToOutputList(string item)
         {
-            ListViewItem itm = new ListViewItem();
-            itm.Content = item;
-            itm.IsHitTestVisible = false;
+            ListViewItem itm = new ListViewItem
+            {
+                Content = item,
+                IsHitTestVisible = false
+            };
             outputListbox.Items.Add(itm);
         }
 
@@ -106,32 +144,53 @@ namespace HAMwithHebb
         {
             if (isInputValid)
             {
-                addToInputList(InputVector.Text);
+                UpdateInputList();
             }
         }
 
         private void InputVector_TextChanged(object sender, TextChangedEventArgs e)
         {
-            isInputValid = validateInputVector(InputVector.Text);
+            isInputValid = ValidateVector(InputVector.Text, InputError);
             InputButton.IsEnabled = isInputValid;
         }
 
-        private void TestButton_Click(object sender, RoutedEventArgs e)
+        private void PredictButton_Click(object sender, RoutedEventArgs e)
         {
-            //CustomVector customVector = addToOutputList(TestVector.Text);
-            //hopfieldNeuralNetwork.Predict(customVector);
+            if (isPredictVectorValid) {
+                UpdateOutputList();
+            }
 
         }
 
         private void InputFile_Click(object sender, RoutedEventArgs e)
         {
-
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                InputError.Content = "";
+                /*if we want to reset the input, this line should be uncomennted*/
+                //Reset_Click(sender, e);
+                foreach (string line in File.ReadLines(openFileDialog.FileName))
+                {
+                    bool temp = ValidateVector(line, InputError);
+                    if (temp) { UpdateInputList(); }
+                    else { Reset_Click(sender, e); InputError.Content+=" The input file is wrong!"; return; }
+                }
+            }
         }
 
         private void Train_Click(object sender, RoutedEventArgs e)
         {
-            hopfieldNeuralNetwork = new HopfieldNeuralNetwork.HopfieldNeuralNetwork(vectors);
+            hopfieldNeuralNetwork = new HopfieldNeuralNetwork.HopfieldNeuralNetwork(vectors,IsUniBiOrNone);
             hopfieldNeuralNetwork.Train();
+            Train.Background = new SolidColorBrush(Colors.Green);
+            Train.Foreground = new SolidColorBrush(Colors.White);
+            Train.Content = "Train Again";
+            //if training was successful, we can add the prediction
+            //canPredict = true;
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
@@ -142,22 +201,24 @@ namespace HAMwithHebb
             outputListbox.Items.Clear();
             InputButton.IsEnabled=false;
             InputVector.Text = "";
-            TestVector.Text = "";
-            TestButton.IsEnabled=false;
+            PredictVector.Text = "";
+            PredictButton.IsEnabled=false;
             InputError.Content = "";
-            TestError.Content = "";
+            PredictError.Content = "";
+            IsUniBiOrNone = 1;
+            Train.Content = "Train";
+            Train.Background = new SolidColorBrush(Colors.LightGray);
+            Train.Foreground = new SolidColorBrush(Colors.Black);
+            canPredict = false;
         }
 
-
-
-        /*
-<ItemsControl x:Name="input" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ListOfStrings}">
-<ItemsControl.ItemTemplate>
-<DataTemplate>
-<TextBlock Text="{Binding}"/>
-</DataTemplate>
-</ItemsControl.ItemTemplate>
-</ItemsControl>
-*/
+        private void PredictVector_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (hopfieldNeuralNetwork != null)
+            {
+                isPredictVectorValid = ValidateVector(PredictVector.Text, PredictError);
+                PredictButton.IsEnabled = isPredictVectorValid;
+            }
+        }
     }
 }
