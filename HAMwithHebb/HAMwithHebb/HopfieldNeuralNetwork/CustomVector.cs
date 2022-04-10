@@ -14,7 +14,7 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             IsUnipolarOrBipolarOrNone=isUnipolarOrBipolarOrNone;
         }
 
-        List<int> Inputs { get;set;}
+        public List<int> Inputs { get;set;}
 
         /* inputs contain -1,1 -> bipolar (-1)
           * inputs contain 0,1 -> unipolar (0)

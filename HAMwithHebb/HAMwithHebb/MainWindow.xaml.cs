@@ -38,6 +38,7 @@ namespace HAMwithHebb
         private void UpdateInputList()
         {
             AddToInputList(currentVector.FormatInputsAsAString());
+            vectors.Add( currentVector );
             if (currentVector.IsUnipolarOrBipolarOrNone!=1 && IsUniBiOrNone != currentVector.IsUnipolarOrBipolarOrNone)
             {
                 IsUniBiOrNone = currentVector.IsUnipolarOrBipolarOrNone;
@@ -196,7 +197,7 @@ namespace HAMwithHebb
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             hopfieldNeuralNetwork = null;
-            vectors = null;
+            vectors = new List<CustomVector>();
             inputListbox.Items.Clear();
             outputListbox.Items.Clear();
             InputButton.IsEnabled=false;

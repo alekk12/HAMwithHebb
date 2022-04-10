@@ -22,10 +22,43 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             this.IsUnipolarOrBipolarOrNone = IsUnipolarOrBipolarOrNone;
         }
 
+        public double[,] TrainingResultMatrix { get; set; }
+        public double TrainingResultN { get; set; }
+
         public void Train()
         {
+            int M = Vectors[ 0 ].Inputs.Count;
+            int N = Vectors.Count;
 
+            TrainingResultMatrix = new double[ M, M ];
+
+            for (int i = 0; i < M; i++ )
+            {
+                for(int j = 0; j < M; j++ )
+                {
+                    if(i == j)
+                    {
+                        TrainingResultMatrix[ i, j ] = 0;
+                    }
+                    else
+                    {
+                        double r = 0;
+                        for(int s = 0; s < N; s++ )
+                        {
+                            if ( IsUnipolarOrBipolarOrNone == 0 )
+                                r += ( 2 * Vectors[ s ].Inputs[ i ] - 1 ) * ( 2 * Vectors[ s ].Inputs[ j ] - 1 );
+                            else
+                                r += Vectors[ s ].Inputs[ i ] * Vectors[ s ].Inputs[ j ];
+                        }
+                        TrainingResultMatrix[ i, j ] = r;// N;
+                    }
+                }
+            }
+            TrainingResultN = N;
         }
+        
+
+
         public void CalculateWeightMatrix()
         {
 
