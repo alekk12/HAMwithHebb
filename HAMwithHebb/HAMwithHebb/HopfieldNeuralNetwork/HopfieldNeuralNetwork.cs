@@ -63,12 +63,90 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
         {
 
         }
+
+        private double[] G(double[] vector, double[] calcVec)
+        {
+            double[] res = new double[ vector.Length ];
+            for(int i = 0; i < vector.Length; i++ )
+            {
+                if(vector[i] > 0)
+                {
+                    res[ i ] = 1;
+                }
+                else if(vector[i] == 0)
+                {
+                    res[ i ] = calcVec[ i ];
+                }
+                else //vector[i] < 0
+                {
+                    res[ i ] = IsUnipolarOrBipolarOrNone == -1 ? -1 : 0;
+                }
+
+            }
+            return res;
+        }
+
+        private double[] GetVectorMultiplicationResult(double[] vector)
+        {
+            double[] res = new double[ vector.Length ];
+            for (int row = 0; row < TrainingResultN; row++ )
+            {
+                res[ row ] = 0;
+                for(int column = 0; column < TrainingResultN; column++ )
+                {
+                    res[ row ] += ( vector[ column ] <= 0 ? -1 : 1 ) * TrainingResultMatrix[ row, column ];
+                }
+            }
+            return res;
+        }
+
+        private bool AreEqual(double[] v1, double[] v2)
+        {
+            if ( v1.Length != v2.Length ) return false;
+            int n = v1.Length;
+            for ( int i = 0; i < n; i++ )
+                if ( v1[ i ] != v2[ i ] )
+                    return false;
+            return true;
+        }
+
+        private string VecToStr(double[] v)
+        {
+            string s = "";
+            for(int i = 0; i < v.Length-1; i++)
+            {
+                s += v[ i ].ToString() + ", ";
+            }
+            s += v[ v.Length-1 ].ToString();
+            return s;
+        }
+
         /*returns the predictions as a list of strings, in case we have a cycle of size and more than one output vector*/
         public List<string> Predict(CustomVector testVector)
         {
-            //List<string> strings = new List<string>();
-            //temporary to see if this works
-            List<string> strings = new List<string> { "There is a cycle of size 2.", "0 0", "1 1" };
+            double[] lastIter = testVector.Inputs.Select( x => (double)x ).ToArray();
+            double[] actualIter = lastIter.Select( x => x ).ToArray();
+
+            List<string> strings = new List<string>();
+            while(true)
+            {
+                double[] nextIter = G( GetVectorMultiplicationResult( actualIter ), actualIter );
+                if( AreEqual(nextIter, actualIter) )
+                {
+                    strings.Add( "Vector is stable. The result is: " );
+                    strings.Add( VecToStr( nextIter ) );
+                    break;
+                }
+                if(AreEqual(nextIter, lastIter))
+                {
+                    strings.Add( "Vector finishes with cycle of 2: " );
+                    strings.Add( VecToStr( nextIter ) );
+                    strings.Add( VecToStr( actualIter ) );
+                    break;
+                }
+                lastIter = actualIter;
+                actualIter = nextIter;
+            }
             return (strings);
         }
     }
