@@ -58,13 +58,6 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             TrainingResultN = N;
             NumberOfNeurons = M;
         }
-        
-
-
-        public void CalculateWeightMatrix()
-        {
-
-        }
 
         private double[] G(double[] vector, double[] calcVec)
         {
@@ -123,7 +116,7 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             return s;
         }
 
-        /*returns the predictions as a list of strings, in case we have a cycle of size and more than one output vector*/
+        /*returns the predictions as a list of strings, in case we have a cycle of size 2 and more than one output vector*/
         public List<string> Predict(CustomVector testVector)
         {
             double[] lastIter = testVector.Inputs.Select( x => (double)x ).ToArray();
