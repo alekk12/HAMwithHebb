@@ -144,5 +144,19 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             }
             return (strings);
         }
+
+        public string GetMatrixString()
+        {
+            string s = "";
+            for (int i = 0; i < NumberOfNeurons; i++)
+            {
+                for (int j = 0; j < NumberOfNeurons; j++)
+                {
+                    s += String.Format("{0,6:0.000}", (TrainingResultMatrix[i, j] / NumberOfNeurons)) + " ";
+                }
+                s += "\n";
+            }
+            return s;
+        }
     }
 }

@@ -35,6 +35,7 @@ namespace HAMwithHebb
         {
             InitializeComponent();
             vectors = new List<CustomVector>();
+            ShowMatrix.IsEnabled = false;
         }
         private void UpdateInputList()
         {
@@ -186,7 +187,6 @@ namespace HAMwithHebb
             if (isPredictVectorValid) {
                 UpdateOutputList();
             }
-
         }
 
         private void InputFile_Click(object sender, RoutedEventArgs e)
@@ -226,6 +226,7 @@ namespace HAMwithHebb
             Train.Foreground = new SolidColorBrush(Colors.White);
             Train.Content = "Train Again";
             PredictVector.IsEnabled = true;
+            ShowMatrix.IsEnabled = true;
             PredictVector.BorderBrush = new SolidColorBrush(Colors.Green);
             //if training was successful, we can add the prediction
             //canPredict = true;
@@ -244,6 +245,7 @@ namespace HAMwithHebb
             PredictVector.Text = "";
             PredictButton.IsEnabled=false;
             PredictVector.IsEnabled = false;
+            ShowMatrix.IsEnabled = false;
             InputError.Content = "";
             PredictError.Content = "";
             IsUniBiOrNone = 1;
@@ -252,6 +254,12 @@ namespace HAMwithHebb
             Train.Foreground = new SolidColorBrush(Colors.Black);
             PredictVector.BorderBrush = new SolidColorBrush(Colors.Black);
             canPredict = false;
+        }
+
+        private void ShowMatrix_Click(object sender, RoutedEventArgs e)
+        {
+            TextboxDialog textboxDialog = new TextboxDialog(hopfieldNeuralNetwork.GetMatrixString());
+            textboxDialog.ShowDialog();
         }
 
         private void PredictVector_TextChanged(object sender, TextChangedEventArgs e)

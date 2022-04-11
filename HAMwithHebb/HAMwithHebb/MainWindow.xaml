@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HAMwithHebb"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" MinHeight="450" MinWidth="800">
+        Title="MainWindow" Height="500" Width="800" MinHeight="500" MinWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.05*" />
@@ -20,6 +20,7 @@
             <RowDefinition Height="0.25*" />
             <RowDefinition Height="0.3*" />
             <RowDefinition Height="3*" />
+            <RowDefinition Height="0.5*" />
             <RowDefinition Height="0.5*" />
             <RowDefinition Height="0.125*" />
         </Grid.RowDefinitions>
@@ -63,6 +64,7 @@
         <Button Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Width="Auto" Name="InputFile" Click="InputFile_Click"  HorizontalAlignment="Center" Content="Add Input File" Height="25" MinWidth="100" />
         <Button x:Name="Train" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" IsEnabled="False" Click="Train_Click"  HorizontalAlignment="Center" Content="Train" Height="25" MinWidth="100" />
         <Button Grid.Row="5"  Grid.Column="3" Grid.ColumnSpan="1" Width="Auto" Name="Reset" Click="Reset_Click"  HorizontalAlignment="Center" Content="Reset" Height="25" MinWidth="100" />
+        <Button Grid.Row="6"  Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" x:Name="ShowMatrix" Click="ShowMatrix_Click"  HorizontalAlignment="Center" Content="Show Matrix" Height="25" MinWidth="100" />
         <Grid/>
 
 
