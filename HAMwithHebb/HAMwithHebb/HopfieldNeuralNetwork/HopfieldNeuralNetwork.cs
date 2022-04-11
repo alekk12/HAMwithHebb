@@ -9,23 +9,47 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
     public class HopfieldNeuralNetwork
     {
         public List<CustomVector> Vectors { get; set; }
-        //CustomVector testVector { get; set; }
 
-         /* inputs contain -1,1 -> bipolar (-1)
-         * inputs contain 0,1 -> unipolar (0)
-         * inputs contain only 1s -> none (1)
-         */
+        /// <summary>
+        /// <list type="bullet">
+        ///    <item>
+        ///        <term>-1</term>
+        ///        <description>Bipolar (contains -1 and 1)</description>
+        ///    </item>
+        ///    <item>
+        ///        <term>0</term>
+        ///        <description>Unipolar (contains 0 and 1)</description>
+        ///    </item>
+        ///    <item>
+        ///        <term>1</term>
+        ///        <description>Contains only 1s, treated as unipolar</description>
+        ///    </item>
+        ///    <item>
+        ///        <term>Other</term>
+        ///        <description>Not supported value, will be treated as unipolar</description>
+        ///    </item>
+        /// </list>
+        /// </summary>
         public int IsUnipolarOrBipolarOrNone { get; set; }
+
         public HopfieldNeuralNetwork(List<CustomVector> vectors, int IsUnipolarOrBipolarOrNone)
         {
             this.Vectors = vectors;
             this.IsUnipolarOrBipolarOrNone = IsUnipolarOrBipolarOrNone;
         }
 
+        /// <summary>
+        /// Matrix that is the result of the training
+        /// </summary>
         public double[,] TrainingResultMatrix { get; set; }
+        /// <summary>
+        /// Number of neurons in the network
+        /// </summary>
         public int NumberOfNeurons { get; set; }
-        public double TrainingResultN { get; set; }
 
+        /// <summary>
+        /// Training the network
+        /// </summary>
         public void Train()
         {
             int M = Vectors[ 0 ].Inputs.Count;
@@ -55,10 +79,12 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
                     }
                 }
             }
-            TrainingResultN = N;
             NumberOfNeurons = M;
         }
 
+        /// <summary>
+        /// g function applied to the resulting vector, we went with 3-piece function for >0, =0 and <0
+        /// </summary>
         private double[] G(double[] vector, double[] calcVec)
         {
             double[] res = new double[ vector.Length ];
@@ -81,6 +107,9 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             return res;
         }
 
+        /// <summary>
+        /// Returns result of multiplication of the trained matrix and input
+        /// </summary>
         private double[] GetVectorMultiplicationResult(double[] vector)
         {
             double[] res = new double[ vector.Length ];
@@ -95,6 +124,9 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             return res;
         }
 
+        /// <summary>
+        /// Checks if 2 vectors are equal
+        /// </summary>
         private bool AreEqual(double[] v1, double[] v2)
         {
             if ( v1.Length != v2.Length ) return false;
@@ -105,6 +137,9 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             return true;
         }
 
+        /// <summary>
+        /// Changes vector to string for convinient printing
+        /// </summary>
         private string VecToStr(double[] v)
         {
             string s = "";
@@ -116,7 +151,10 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             return s;
         }
 
-        /*returns the predictions as a list of strings, in case we have a cycle of size 2 and more than one output vector*/
+        /// <summary>
+        /// Returns the result of the test in form of a message informing about stability and resulting vector (or 2 vectors in case of the cycle).
+        /// </summary>
+        /// <returns>List containing lines of the message</returns>
         public List<string> Predict(CustomVector testVector)
         {
             double[] lastIter = testVector.Inputs.Select( x => (double)x ).ToArray();
@@ -145,6 +183,9 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
             return (strings);
         }
 
+        /// <summary>
+        /// Formats the trained matrix for convinient output in the "Show Matrix" button
+        /// </summary>
         public string GetMatrixString()
         {
             string s = "";
