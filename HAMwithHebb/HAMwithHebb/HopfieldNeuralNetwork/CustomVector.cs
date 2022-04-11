@@ -8,6 +8,10 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
 {
     public class CustomVector
     {
+        public CustomVector()
+        {
+
+        }
         public CustomVector(List<int> inputs, int isUnipolarOrBipolarOrNone)
         {
             Inputs=inputs;

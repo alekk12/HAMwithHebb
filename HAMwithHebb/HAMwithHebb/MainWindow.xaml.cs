@@ -24,6 +24,7 @@ namespace HAMwithHebb
     public partial class MainWindow : Window
     {
         public CustomVector currentVector;
+        public CustomVector testVector;
         public List<CustomVector> vectors;
         public HopfieldNeuralNetwork.HopfieldNeuralNetwork hopfieldNeuralNetwork;
         public bool isInputValid = false;
@@ -45,14 +46,35 @@ namespace HAMwithHebb
                 Train.Content = Train.Content+" "+(IsUniBiOrNone==0 ? "Unipolar" : "Bipolar");
             }
             InputButton.IsEnabled = false;
-            currentVector = null;
-            InputVector.Text = null;
+            currentVector = new CustomVector();
+            InputVector.Text = "";
+            Train.IsEnabled = true;
+        }
+        private void UpdateNetworkType(CustomVector vector)
+        {
+                if (vector.IsUnipolarOrBipolarOrNone!=1 && IsUniBiOrNone != vector.IsUnipolarOrBipolarOrNone)
+                {
+                    IsUniBiOrNone = vector.IsUnipolarOrBipolarOrNone;
+                    Train.Content = Train.Content+" "+(IsUniBiOrNone==0 ? "Unipolar" : "Bipolar");
+                }
+            currentVector = new CustomVector();
+        }
+        private void UpdateInputList(List<CustomVector> currentVectors)
+        {
+            foreach (CustomVector vector in currentVectors)
+            {
+                AddToInputList(vector.FormatInputsAsAString());
+                vectors.Add(vector);
+            }
+            InputButton.IsEnabled = false;
+            currentVector = new CustomVector();
+            InputVector.Text = "";
             Train.IsEnabled = true;
         }
         private void UpdateOutputList()
         {
             outputListbox.Items.Clear();
-            List<string> items = hopfieldNeuralNetwork.Predict(currentVector);
+            List<string> items = hopfieldNeuralNetwork.Predict(testVector);
             foreach (string item in items)
             {
                 AddToOutputList(item);
@@ -74,9 +96,13 @@ namespace HAMwithHebb
             List<int> list = new List<int>();
             int netUniBiNone = IsUniBiOrNone;
             int vecUniBiNone = 1;
+            /*if(vectors.Count > 0 && vectors[0].Inputs.Count != temp.Length)
+            {
+                InputError.Content = "Wrong Input Length! ";
+                return (false);
+            }*/
             foreach (string s in temp)
             {
-                //Train.Content = netUniBiNone+"|"+vecUniBiNone+"|"+s;
                 if (int.TryParse(s, out int numericValue))
                 {
                     if (!opts.Contains(numericValue))
@@ -172,14 +198,23 @@ namespace HAMwithHebb
             if (openFileDialog.ShowDialog() == true)
             {
                 InputError.Content = "";
+                List<CustomVector> vectors = new List<CustomVector>();
+                int prevIsUniBiOrNone = IsUniBiOrNone;
                 /*if we want to reset the input, this line should be uncomennted*/
                 //Reset_Click(sender, e);
                 foreach (string line in File.ReadLines(openFileDialog.FileName))
                 {
                     bool temp = ValidateVector(line, InputError);
-                    if (temp) { UpdateInputList(); }
-                    else { Reset_Click(sender, e); InputError.Content+=" The input file is wrong!"; return; }
+                    if (temp) { vectors.Add(currentVector); UpdateNetworkType(currentVector); }
+                    else 
+                    { 
+                        currentVector = new CustomVector(); 
+                        IsUniBiOrNone = prevIsUniBiOrNone; 
+                        InputError.Content+=" The input file is wrong!"; 
+                        return; 
+                    }
                 }
+                UpdateInputList(vectors);
             }
         }
 
@@ -190,6 +225,8 @@ namespace HAMwithHebb
             Train.Background = new SolidColorBrush(Colors.Green);
             Train.Foreground = new SolidColorBrush(Colors.White);
             Train.Content = "Train Again";
+            PredictVector.IsEnabled = true;
+            PredictVector.BorderBrush = new SolidColorBrush(Colors.Green);
             //if training was successful, we can add the prediction
             //canPredict = true;
         }
@@ -198,18 +235,22 @@ namespace HAMwithHebb
         {
             hopfieldNeuralNetwork = null;
             vectors = new List<CustomVector>();
+            currentVector = new CustomVector();
+            testVector = new CustomVector();
             inputListbox.Items.Clear();
             outputListbox.Items.Clear();
             InputButton.IsEnabled=false;
             InputVector.Text = "";
             PredictVector.Text = "";
             PredictButton.IsEnabled=false;
+            PredictVector.IsEnabled = false;
             InputError.Content = "";
             PredictError.Content = "";
             IsUniBiOrNone = 1;
             Train.Content = "Train";
             Train.Background = new SolidColorBrush(Colors.LightGray);
             Train.Foreground = new SolidColorBrush(Colors.Black);
+            PredictVector.BorderBrush = new SolidColorBrush(Colors.Black);
             canPredict = false;
         }
 
@@ -219,6 +260,12 @@ namespace HAMwithHebb
             {
                 isPredictVectorValid = ValidateVector(PredictVector.Text, PredictError);
                 PredictButton.IsEnabled = isPredictVectorValid;
+                if (isPredictVectorValid)
+                {
+                    testVector = currentVector;
+                    currentVector = new CustomVector();
+                }
+                //PredictVector.IsEnabled = isPredictVectorValid;
             }
         }
     }
