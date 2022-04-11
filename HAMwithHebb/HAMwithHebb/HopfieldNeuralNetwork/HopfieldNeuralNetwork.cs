@@ -23,6 +23,7 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
         }
 
         public double[,] TrainingResultMatrix { get; set; }
+        public int NumberOfNeurons { get; set; }
         public double TrainingResultN { get; set; }
 
         public void Train()
@@ -55,6 +56,7 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
                 }
             }
             TrainingResultN = N;
+            NumberOfNeurons = M;
         }
         
 
@@ -89,10 +91,10 @@ namespace HAMwithHebb.HopfieldNeuralNetwork
         private double[] GetVectorMultiplicationResult(double[] vector)
         {
             double[] res = new double[ vector.Length ];
-            for (int row = 0; row < TrainingResultN; row++ )
+            for (int row = 0; row < NumberOfNeurons; row++ )
             {
                 res[ row ] = 0;
-                for(int column = 0; column < TrainingResultN; column++ )
+                for(int column = 0; column < NumberOfNeurons; column++ )
                 {
                     res[ row ] += ( vector[ column ] <= 0 ? -1 : 1 ) * TrainingResultMatrix[ row, column ];
                 }
