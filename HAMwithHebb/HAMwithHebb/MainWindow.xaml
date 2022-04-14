@@ -5,8 +5,68 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HAMwithHebb"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800" MinHeight="500" MinWidth="800">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.05*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="0.05*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="0.05*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.125*" />
+            <RowDefinition Height="0.3*" />
+            <RowDefinition Height="0.25*" />
+            <RowDefinition Height="0.3*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.125*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Grid.ColumnSpan="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.05*" />
+                <ColumnDefinition Width="0.72*" />
+                <ColumnDefinition Width="0.28*" />
+                <ColumnDefinition Width="0.05*" />
+                <ColumnDefinition Width="0.85*" />
+                <ColumnDefinition Width="0.15*" />
+                <ColumnDefinition Width="0.05*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <TextBox VerticalAlignment="Bottom" Grid.Row="1" TextChanged="InputVector_TextChanged"  Name="InputVector" KeyDown="InputVector_KeyDown" HorizontalAlignment="Stretch" Grid.Column="1" TextWrapping="Wrap" Text="" Height="25" MinWidth="250"/>
+            <Button VerticalAlignment="Bottom" x:Name="InputButton" IsEnabled="False" Grid.Row="1" Grid.Column="2" Click="InputButton_Click"  HorizontalAlignment="Right" Content="Add Input Vector" Height="25" MinWidth="100"/>
+
+            <TextBox VerticalAlignment="Bottom" IsEnabled="False" Grid.Row="1"  TextChanged="PredictVector_TextChanged" Name="PredictVector" KeyDown="PredictVector_KeyDown"  HorizontalAlignment="Stretch" Grid.Column="4" TextWrapping="Wrap" Text="" Height="25" MinWidth="250" />
+            <Button VerticalAlignment="Bottom" x:Name="PredictButton" IsEnabled="False" Grid.Row="1" Grid.Column="5" Click="PredictButton_Click"  HorizontalAlignment="Right" Content="Predict" MinWidth="50" Height="25" />
+        </Grid>
+       
+
+        <Label Grid.Row="2" Name="InputError" VerticalAlignment="Top" Grid.Column="1" Content="" FontSize="10" HorizontalAlignment="Stretch" Grid.RowSpan="1" FontWeight="Bold" Foreground="Red"/>
+        <Label Grid.Row="2" Name="PredictError" VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Column="3" Content="" FontSize="10" Grid.RowSpan="1" Foreground="Red" FontWeight="Bold"/>
+        <Label Grid.Row="3"  HorizontalAlignment="Left" Grid.Column="1" Content="Input" Height="25" Width="50" />
+        <Label Grid.Row="3" HorizontalAlignment="Left" Grid.Column="3" Content="Output" Height="25" Width="50"/>
+        <ListView Grid.Row="4"  x:Name="inputListbox" Grid.Column="1"  d:ItemsSource="{Binding ListOfInput}"/>
+        <Grid Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+        <ListView Grid.Row="0"  x:Name="outputListbox" Grid.Column="3"  d:ItemsSource="{Binding ListOfOutput}"/>
+        </Grid>
+
+        <Button Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Width="Auto" Name="InputFile" Click="InputFile_Click"  HorizontalAlignment="Center" Content="Add Input File" Height="25" MinWidth="100" />
+        <Button x:Name="Train" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" IsEnabled="False" Click="Train_Click"  HorizontalAlignment="Center" Content="Train" Height="25" MinWidth="100" />
+        <Button Grid.Row="5"  Grid.Column="3" Grid.ColumnSpan="1" Width="Auto" Name="Reset" Click="Reset_Click"  HorizontalAlignment="Center" Content="Reset" Height="25" MinWidth="100" />
+        <Button Grid.Row="6"  Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" x:Name="ShowMatrix" Click="ShowMatrix_Click"  HorizontalAlignment="Center" Content="Show Matrix" Height="25" MinWidth="100" />
+        <Grid/>
+
+
     </Grid>
 </Window>
